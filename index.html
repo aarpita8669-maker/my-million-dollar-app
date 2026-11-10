@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chhodo – Quit Tobacco Companion</title>
+<style>
+:root{--bg:#eaf9f7;--card:#fff;--tx:#0f2e3a;--mut:#56767f;--pri:#0ea5a4;--pri2:#d4f3f0;--bad:#f0643a;--gold:#d98e00;--bd:#cfeae6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1f26;--card:#12303a;--tx:#e6f7f6;--mut:#8fb4bb;--pri:#2dd4bf;--pri2:#14424a;--bad:#ff8a5c;--gold:#ffc94a;--bd:#1f4a55}}
+:root[data-theme="dark"]{--bg:#0b1f26;--card:#12303a;--tx:#e6f7f6;--mut:#8fb4bb;--pri:#2dd4bf;--pri2:#14424a;--bad:#ff8a5c;--gold:#ffc94a;--bd:#1f4a55}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Devanagari",sans-serif;line-height:1.45}
+.app{max-width:480px;margin:0 auto;padding:14px 14px 90px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+h1{font-size:22px;margin:0;color:var(--pri)}
+.lang{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:20px;padding:6px 12px;font-size:14px;cursor:pointer}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:12px}
+.hero{text-align:center;background:linear-gradient(135deg,#0ea5a4,#2f6fe4);border:0;color:#fff}.hero .mut{color:rgba(255,255,255,.88)}
+.big{font-size:68px;font-weight:800;color:#fff;line-height:1.05}
+.mut{color:var(--mut);font-size:14px}
+.row{display:flex;gap:10px}.row>.card{flex:1;text-align:center;margin-bottom:12px}
+.val{font-size:24px;font-weight:700}#v-saved{color:var(--gold)}#v-streak{color:var(--bad)}
+.bar{height:10px;background:var(--pri2);border-radius:8px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),var(--gold));width:0;border-radius:8px}
+button.p{background:linear-gradient(135deg,#0ea5a4,#2f6fe4);color:#fff;border:0;border-radius:12px;padding:13px 16px;font-size:16px;font-weight:600;width:100%;cursor:pointer}
+button.s{background:linear-gradient(135deg,#ff7a45,#ffa62b);color:#fff;border:0;border-radius:12px;padding:12px 16px;font-size:15px;font-weight:600;width:100%;cursor:pointer}
+button.d{background:transparent;color:var(--bad);border:1px solid var(--bad);border-radius:12px;padding:12px 16px;font-size:15px;width:100%;cursor:pointer}
+label{display:block;font-size:14px;color:var(--mut);margin:10px 0 4px}
+input,select{width:100%;padding:11px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:16px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;background:none;color:var(--mut);padding:10px 4px;font-size:12px;cursor:pointer}
+nav button b{display:block;font-size:22px;font-weight:400}
+nav button.on{color:var(--pri);font-weight:700}
+.screen{display:none}.screen.on{display:block}
+#circ{width:170px;height:170px;border-radius:50%;background:var(--pri2);border:4px solid var(--pri);margin:14px auto;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--pri);font-size:20px;transition:transform 4s ease-in-out}
+.timer{font-size:34px;font-weight:800;text-align:center}
+#field{position:relative;height:200px;background:var(--pri2);border-radius:14px;overflow:hidden;margin-top:8px}
+#dot{position:absolute;width:46px;height:46px;border-radius:50%;background:var(--pri);border:0;font-size:22px;cursor:pointer;transition:left .25s,top .25s}
+.days{display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.days span{width:30px;height:30px;border-radius:8px;background:var(--pri2);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mut)}
+.days span.ok{background:var(--pri);color:#fff}.days span.no{background:var(--bad);color:#fff}
+.note{font-size:12px;color:var(--mut);text-align:center;margin-top:14px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+<header><h1 id="ttl">Chhodo</h1><button class="lang" id="lg" onclick="toggleLang()">हिं</button></header>
+
+<section id="s-lang" class="screen"><div class="card" style="text-align:center"><h2 style="margin-top:0">भाषा चुनें<br>Choose your language</h2><button class="p" onclick="pickLang('hi')">हिन्दी</button><div style="height:10px"></div><button class="p" onclick="pickLang('en')">English</button></div></section>
+
+<section id="s-setup" class="screen">
+<div class="card"><h2 id="t-setup" style="margin-top:0"></h2>
+<label id="l-date"></label><input type="datetime-local" id="i-date">
+<label id="l-type"></label><select id="i-type"></select>
+<label id="l-spend"></label><input type="number" id="i-spend" min="0" value="50" inputmode="numeric">
+<div style="height:14px"></div><button class="p" id="b-start" onclick="saveSetup()"></button></div>
+</section>
+
+<section id="s-home" class="screen">
+<div class="card hero"><div class="mut" id="t-clean"></div><div class="big" id="v-days">0</div><div class="mut" id="v-hrs"></div></div>
+<div class="row"><div class="card"><div class="mut" id="t-saved"></div><div class="val" id="v-saved">₹0</div></div>
+<div class="card"><div class="mut" id="t-streak"></div><div class="val" id="v-streak">0</div></div></div>
+<div class="card"><b id="t-next"></b><div class="bar"><i id="v-bar"></i></div><div class="mut" id="v-ms"></div></div>
+<button class="s" onclick="show('sos')" id="b-crave"></button>
+<div style="height:10px"></div><button class="d" onclick="resetAll()" id="b-reset"></button>
+</section>
+
+<section id="s-sos" class="screen">
+<div class="card" style="text-align:center"><h2 id="t-sos" style="margin-top:0"></h2><div class="mut" id="t-sos2"></div>
+<div id="circ">—</div><div class="timer" id="v-timer">5:00</div>
+<div style="height:10px"></div><button class="p" id="b-sos" onclick="startSOS()"></button></div>
+<div class="card"><b id="t-game"></b> <span class="mut" id="v-score"></span><div id="field"><button id="dot" onclick="hit()">🌿</button></div></div>
+<div class="card mut" id="t-tips"></div>
+</section>
+
+<section id="s-check" class="screen">
+<div class="card"><h2 id="t-check" style="margin-top:0"></h2><div id="q-today"></div>
+<div style="height:10px"></div><button class="p" id="b-yes" onclick="checkin(true)"></button>
+<div style="height:8px"></div><button class="d" id="b-no" onclick="checkin(false)"></button>
+<div class="mut" id="v-msg" style="margin-top:10px"></div></div>
+<div class="card"><b id="t-week"></b><div class="days" id="v-week"></div></div>
+</section>
+
+<p class="note" id="disc"></p>
+</div>
+<nav id="nav"></nav>
+
+<script>
+var T={
+en:{ttl:"Chhodo",setup:"Start your quit journey",date:"Quit date and time",type:"What did you use?",spend:"Money spent per day (₹)",start:"Start",
+types:["Gutka / paan masala","Khaini","Zarda / chewing tobacco","Cigarette / bidi","Other"],
+clean:"Tobacco-free for",days:"days",hrs:function(h){return h+" hours in total"},saved:"Money saved",streak:"Check-in streak",next:"Next milestone",
+crave:"I have a craving 🆘",reset:"Reset everything",sos:"Craving SOS",sos2:"Cravings fade in about 5 minutes. Breathe with the circle.",
+sosb:"Start 5-minute SOS",sosd:"Done. You rode it out! 💪",game:"Distraction game: tap the leaf",score:"Score: ",
+tips:"Tips: drink cold water, chew saunf, ilaychi or cloves, brush your teeth, walk for 5 minutes, call a friend. Don’t tell yourself “just one”.",
+check:"Daily check-in",q:"Did you stay tobacco-free today?",yes:"Yes, I stayed clean ✅",no:"I slipped today",week:"Last 7 days",
+done:"Checked in today. See you tomorrow!",slip:"One slip does not erase your effort. Your counter restarts, and you can start again right now.",
+good:"Great work. Another clean day!",inh:"Breathe in",hold:"Hold",exh:"Breathe out",
+nav:["Home","SOS","Check-in"],
+ms:[[1,"24 hours: nicotine is leaving your body"],[3,"3 days: cravings are at their peak, then ease"],[7,"1 week: your mouth feels fresher"],[14,"2 weeks: mouth sores start to heal"],[30,"1 month: a big win. Your gums look healthier"],[90,"3 months: much lower risk, keep going"],[365,"1 year: you did it!"]],
+disc:"Support tool only. Not a medical treatment. If you see white patches, mouth sores that do not heal, or difficulty opening the mouth, see a doctor or dentist. National Tobacco Quitline: 1800-11-2356.",
+confirm:"Delete all your data?"},
+hi:{ttl:"छोड़ो",setup:"अपना सफ़र शुरू करें",date:"छोड़ने की तारीख़ और समय",type:"आप क्या इस्तेमाल करते थे?",spend:"रोज़ का ख़र्च (₹)",start:"शुरू करें",
+types:["गुटखा / पान मसाला","खैनी","ज़र्दा / चबाने वाला तंबाकू","सिगरेट / बीड़ी","अन्य"],
+clean:"तंबाकू-मुक्त",days:"दिन",hrs:function(h){return "कुल "+h+" घंटे"},saved:"बचाए पैसे",streak:"चेक-इन स्ट्रीक",next:"अगला पड़ाव",
+crave:"मुझे तलब लगी है 🆘",reset:"सब कुछ रीसेट करें",sos:"तलब SOS",sos2:"तलब लगभग 5 मिनट में कम हो जाती है। गोले के साथ सांस लें।",
+sosb:"5 मिनट का SOS शुरू करें",sosd:"शाबाश! आपने तलब को हरा दिया! 💪",game:"ध्यान भटकाओ: पत्ते को छुओ",score:"स्कोर: ",
+tips:"सुझाव: ठंडा पानी पिएं, सौंफ़, इलायची या लौंग चबाएं, ब्रश करें, 5 मिनट टहलें, किसी दोस्त को फ़ोन करें। “बस एक बार” कभी न सोचें।",
+check:"रोज़ का चेक-इन",q:"क्या आज आप तंबाकू से दूर रहे?",yes:"हां, आज साफ़ रहा ✅",no:"आज फिसल गया",week:"पिछले 7 दिन",
+done:"आज का चेक-इन हो गया। कल मिलते हैं!",slip:"एक चूक आपकी मेहनत मिटाती नहीं। काउंटर फिर शुरू होगा, आप अभी दोबारा शुरू कर सकते हैं।",
+good:"बहुत बढ़िया! एक और साफ़ दिन!",inh:"सांस लें",hold:"रोकें",exh:"सांस छोड़ें",
+nav:["होम","SOS","चेक-इन"],
+ms:[[1,"24 घंटे: निकोटिन शरीर से निकल रहा है"],[3,"3 दिन: तलब सबसे ज़्यादा, फिर कम"],[7,"1 हफ़्ता: मुंह ज़्यादा ताज़ा लगेगा"],[14,"2 हफ़्ते: मुंह के छाले भरने लगते हैं"],[30,"1 महीना: बड़ी जीत। मसूड़े स्वस्थ दिखेंगे"],[90,"3 महीने: ख़तरा काफ़ी कम, डटे रहें"],[365,"1 साल: आपने कर दिखाया!"]],
+disc:"यह केवल सहायता का साधन है, इलाज नहीं। मुंह में सफ़ेद धब्बे, ठीक न होने वाले छाले या मुंह कम खुलने पर डॉक्टर या दंत चिकित्सक को दिखाएं। राष्ट्रीय तंबाकू क्विटलाइन: 1800-11-2356।",
+confirm:"सारा डेटा मिटा दें?"}};
+var S={lang:"en",quit:null,spend:50,type:0,checks:{}};
+function load(){try{var r=localStorage.getItem("chhodo");if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}}
+function save(){try{localStorage.setItem("chhodo",JSON.stringify(S))}catch(e){}}
+function t(){return T[S.lang]}
+function $(i){return document.getElementById(i)}
+function dkey(d){d=d||new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function toggleLang(){S.lang=S.lang==="en"?"hi":"en";save();render()}
+function show(n){["lang","setup","home","sos","check"].forEach(function(x){$("s-"+x).classList.toggle("on",x===n)});
+ var i={home:0,sos:1,check:2}[n];[].forEach.call($("nav").children,function(b,k){b.classList.toggle("on",k===i)});
+ $("nav").style.display=(n==="setup"||n==="lang")?"none":"flex";if(n==="home"||n==="check")render()}
+function pad(n){return n<10?"0"+n:n}
+function streak(){var n=0,d=new Date();if(S.checks[dkey(d)]===undefined)d.setDate(d.getDate()-1);
+ while(S.checks[dkey(d)]===true){n++;d.setDate(d.getDate()-1)}return n}
+function render(){var L=t(),i;
+ document.documentElement.lang=S.lang;$("lg").textContent=S.lang==="en"?"हिं":"EN";$("ttl").textContent=L.ttl;
+ $("t-setup").textContent=L.setup;$("l-date").textContent=L.date;$("l-type").textContent=L.type;$("l-spend").textContent=L.spend;$("b-start").textContent=L.start;
+ var sel=$("i-type"),cur=sel.value||S.type;sel.innerHTML="";L.types.forEach(function(x,k){var o=document.createElement("option");o.value=k;o.textContent=x;sel.appendChild(o)});sel.value=cur;
+ $("t-clean").textContent=L.clean;$("t-saved").textContent=L.saved;$("t-streak").textContent=L.streak;$("t-next").textContent=L.next;
+ $("b-crave").textContent=L.crave;$("b-reset").textContent=L.reset;$("t-sos").textContent=L.sos;$("t-sos2").textContent=L.sos2;
+ if(!timer)$("b-sos").textContent=L.sosb;$("t-game").textContent=L.game;$("v-score").textContent=L.score+score;$("t-tips").textContent=L.tips;
+ $("t-check").textContent=L.check;$("q-today").textContent=L.q;$("b-yes").textContent=L.yes;$("b-no").textContent=L.no;$("t-week").textContent=L.week;
+ $("disc").textContent=L.disc;$("nav").innerHTML="";
+ [["🏠","home"],["🆘","sos"],["✅","check"]].forEach(function(x,k){var b=document.createElement("button");b.innerHTML="<b>"+x[0]+"</b>"+L.nav[k];b.onclick=function(){show(x[1])};$("nav").appendChild(b)});
+ if(S.quit){var ms=Date.now()-new Date(S.quit).getTime();if(ms<0)ms=0;var d=Math.floor(ms/864e5),h=Math.floor(ms/36e5);
+  $("v-days").textContent=d;$("v-hrs").textContent=L.days+" · "+L.hrs(h);
+  $("v-saved").textContent="₹"+Math.round(ms/864e5*S.spend).toLocaleString("en-IN");$("v-streak").textContent=streak();
+  var nx=L.ms[L.ms.length-1],pv=0;for(i=0;i<L.ms.length;i++){if(d<L.ms[i][0]){nx=L.ms[i];break}pv=L.ms[i][0]}
+  var pct=Math.min(100,Math.max(3,(ms/864e5-pv)/(nx[0]-pv)*100));$("v-bar").style.width=pct+"%";$("v-ms").textContent=nx[1];
+  var w="";for(i=6;i>=0;i--){var dt=new Date();dt.setDate(dt.getDate()-i);var v=S.checks[dkey(dt)];w+='<span class="'+(v===true?"ok":v===false?"no":"")+'">'+dt.getDate()+"</span>"}
+  $("v-week").innerHTML=w;
+  var tv=S.checks[dkey()];$("v-msg").textContent=tv===true?L.done:tv===false?L.slip:""}
+ $("ttl").nextElementSibling}
+function saveSetup(){var v=$("i-date").value;S.quit=v?new Date(v).toISOString():new Date().toISOString();S.spend=Number($("i-spend").value)||0;S.type=Number($("i-type").value)||0;save();show("home")}
+function checkin(ok){var k=dkey();S.checks[k]=ok;if(!ok){S.quit=new Date().toISOString()}save();render();$("v-msg").textContent=ok?t().good:t().slip}
+function resetAll(){if(confirm(t().confirm)){S={lang:S.lang,langSet:true,quit:null,spend:50,type:0,checks:{}};save();var n=new Date();$("i-date").value=n.getFullYear()+"-"+pad(n.getMonth()+1)+"-"+pad(n.getDate())+"T"+pad(n.getHours())+":"+pad(n.getMinutes());show("setup");render()}}
+/* SOS */
+var timer=null,left=300,ph=0,pt=null,score=0,gt=null;
+function startSOS(){if(timer)return;left=300;tick();timer=setInterval(function(){left--;tick();if(left<=0)endSOS()},1000);breathe();moveDot();gt=setInterval(moveDot,1200);$("b-sos").textContent="…"}
+function tick(){$("v-timer").textContent=Math.floor(left/60)+":"+pad(left%60)}
+function breathe(){var L=t(),c=$("circ"),seq=[[L.inh,4,1.3],[L.hold,4,1.3],[L.exh,6,0.85]];
+ (function step(){if(!timer)return;var s=seq[ph%3];c.textContent=s[0];c.style.transitionDuration=s[1]+"s";c.style.transform="scale("+s[2]+")";ph++;pt=setTimeout(step,s[1]*1000)})()}
+function endSOS(){clearInterval(timer);clearInterval(gt);clearTimeout(pt);timer=null;$("circ").textContent="💪";$("circ").style.transform="scale(1)";$("v-timer").textContent=t().sosd;$("b-sos").textContent=t().sosb}
+function moveDot(){var f=$("field"),d=$("dot");d.style.left=Math.random()*(f.clientWidth-46)+"px";d.style.top=Math.random()*(f.clientHeight-46)+"px"}
+function hit(){score++;$("v-score").textContent=t().score+score;moveDot()}
+function pickLang(l){S.lang=l;S.langSet=true;save();render();show(S.quit?"home":"setup")}
+/* init */
+load();var n0=new Date();$("i-date").value=n0.getFullYear()+"-"+pad(n0.getMonth()+1)+"-"+pad(n0.getDate())+"T"+pad(n0.getHours())+":"+pad(n0.getMinutes());
+if(S.type)$("i-type").value=S.type;$("i-spend").value=S.spend;
+render();show(!S.langSet?"lang":S.quit?"home":"setup");
+setInterval(function(){if($("s-home").classList.contains("on"))render()},60000);
+</script>
+</body>
+</html>
